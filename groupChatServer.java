@@ -1,9 +1,7 @@
-//*
-*------------Assignment-1--Group-Chat-------------------------
-*------------Submitted-by--Brady-Ibanez--100367230------------
-*------------Submitted-on--October-4-2018---------------------
-*------------SOFE-4790U-Distributed-Systems-------------------
-*//
+//------------Assignment-1--Group-Chat-------------------------
+//------------Submitted-by--Brady-Ibanez--100367230------------
+//------------Submitted-on--October-4-2018---------------------
+//------------SOFE-4790U-Distributed-Systems-------------------
 
 import java.net.*;
 import java.io.*;
@@ -45,25 +43,25 @@ class Connection extends Thread {
 //VARIABLE DECLARATIONS
 
     //Locals sensitive to each thread
-    Socket client;
-    ServerSocket server;
-    PrintWriter out;
-    BufferedReader in, in2, in3;
-    String whatWasSaid, whatWasSaidString, userName, newName, publicMessage;
+    Socket client;//Socket connection detail of client, made on client joining chat room
+    ServerSocket server;//Socket connection for the server for the knew thread each time a client joins 
+    PrintWriter out;//Output stream
+    BufferedReader in, in2, in3;//Input streams referenced at different times for different loop. Loops made them do strange things even though they all operate the same stream
+    String whatWasSaid, whatWasSaidString, userName, newName, publicMessage;//Strings to allow for private user interaction with non global commands
     int loopCount; // Used to count how many times a thread has interacted. Only used now for start purposes.
     int mySeatCount; //Retains specific users[x][0] value for this user/client
     int myPort; //Retains client's local port
-    ReentrantLock lock = new ReentrantLock();//Needed for mutex implementation on sensative vars
+    ReentrantLock lock = new ReentrantLock();//Needed for mutex implementation and operation on global vars
 
     //Globals to be shared by threads
     public static String[][] users = new String[4][2]; //Include up to 4 users. 1 base indexing in Java on declaration.
     public static int userCount = 0;//Holds a count of all active users. users[number][port=0,available=1]
     public static int seatCount; //Needs to be shared so threads know where previous threads were changing count
     public static String groupChat;//Used for global variable to update in group chat
-    public static Socket clients[] = new Socket[4];
+    public static Socket clients[] = new Socket[4];//Global of all client socketes to be shared among threads
 
 //CONSTRUCTOR DECLARATION - for each thread instatiation, used to trigger the tread to start
-
+//Allows for seat count to be triggered and maintained as clients join and leave chat room
     public Connection(Socket c, ServerSocket s) {
 
 	client = c;
@@ -305,7 +303,8 @@ class Connection extends Thread {
 	System.out.println("'change user name': Update displayed user name");
 	System.out.println("'message': Contribute to ongoing chat...more instructions will follow.");
     }
-
+	
+    //Used to trigger Broadcast when client requests to send group chat
     public void sendToAll(String whatWasSaid){
 	out.flush();
 	try
@@ -393,7 +392,7 @@ class Connection extends Thread {
 
 				else if (whatWasSaidString.equals("I'm awake"))//Welcome message on setup
 				{
-					out.println("Welcome to the LAN group chat!!");
+					out.println("Welcome to the group chat!!");
 				}
 
 				else
