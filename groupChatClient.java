@@ -8,6 +8,14 @@ import java.net.*;
 import java.io.*;
 import java.lang.*;
 
+/**
+*Where the idea of a client is created. The main method references 2 inputted parameters from the terminal, the first for the address location
+*where the host (Server) is activated, and the second for the Socket the host is receiving client requests. Two threads are created for
+*every time the script is run, one a chat thread and one a listener thread which each instatiate the other two classes declared below. The
+*two threads are necessary to allow for simultaenous input and out put to and from the server, thus showing received content and taking
+*outgoing content simultaneously.
+*/
+
 public class groupChatClient{
 
    static String chat;
@@ -41,6 +49,9 @@ public class groupChatClient{
     }
 }
 
+/**
+*The Listening class, which allows for users to receive input from the input stream coming from the Server.
+*/
     class Listening implements Runnable{//thread class for listening to server
 
 	Socket server = null;
@@ -48,6 +59,10 @@ public class groupChatClient{
 	Listening(Socket serverSide) {
 		this.server = serverSide;
 	}
+
+/**
+*The thread start method, which work to respond properly to incoming server responses.
+*/
 
 	public void run() {
 		try
@@ -90,6 +105,9 @@ public class groupChatClient{
 		}
     	}
 
+/**
+*A class instatiated for each client allowing them to send content (requests, commands, and chat) to the server.
+*/
     class Chatting implements Runnable {//Thread class for talking to server
 
 	Socket server = null;
@@ -101,6 +119,11 @@ public class groupChatClient{
 	public String getCommand(){
 		return userInput;
 	}
+
+/**
+*The thread governing the interaction of the Chatting object created for each connected client. Looks to analyze inputted information from
+*the client (as per the reference to the stdChatIn stream), and sending it to the server (as per the chatOut stream).
+*/
 
 	public void run(){
 	try

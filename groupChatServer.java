@@ -7,6 +7,10 @@ import java.net.*;
 import java.io.*;
 import java.util.concurrent.locks.*;
 
+/**
+*Where the main class is declared and the Connection is configured by constructing a Connection() opbject
+*/
+
 public class groupChatServer extends Thread{
 
     //Run the whole thing
@@ -38,13 +42,17 @@ public class groupChatServer extends Thread{
     }
 }
 
+/**
+*A class to define a fresh object for every Socket connected client.
+*/
+
 class Connection extends Thread {
 
 //VARIABLE DECLARATIONS
 
     //Locals sensitive to each thread
     Socket client;//Socket connection detail of client, made on client joining chat room
-    ServerSocket server;//Socket connection for the server for the knew thread each time a client joins 
+    ServerSocket server;//Socket connection for the server for the knew thread each time a client joins
     PrintWriter out;//Output stream
     BufferedReader in, in2, in3;//Input streams referenced at different times for different loop. Loops made them do strange things even though they all operate the same stream
     String whatWasSaid, whatWasSaidString, userName, newName, publicMessage;//Strings to allow for private user interaction with non global commands
@@ -62,6 +70,13 @@ class Connection extends Thread {
 
 //CONSTRUCTOR DECLARATION - for each thread instatiation, used to trigger the tread to start
 //Allows for seat count to be triggered and maintained as clients join and leave chat room
+/**
+*Where a connection is configured. A new object of class Connection is created for every user look to join the chat group. Does the leg work
+*to see if a "seat" (a global variable array declared above) is initially available, released, or occupied.
+*
+*@param s - The socket passed from the main invoked class when groupChatServer is called by a perspective client
+*@param c - The socket created for the server that clients seek and attach to
+*/
     public Connection(Socket c, ServerSocket s) {
 
 	client = c;
@@ -105,6 +120,11 @@ class Connection extends Thread {
 
 //METHOD DECLARATIONS
 
+/**
+*Does not actually configure the connection, but rather the global variables that make a client recognizable and referencable by other clients.
+*It allows for the configuration of the concept of "seats", as mentioned above, as well as provides users with variables for user names, where
+* the default give vaule is the client's local port in use.
+*/
     //Provides means of updating registered users reference list with their ports/names. Only 4 allowed, but could be altered.
     public synchronized void makeConnection() {
 
@@ -169,6 +189,11 @@ class Connection extends Thread {
 	lock.unlock();
     }
 
+/**
+*Provides users their analasys variable definition of a seat when compared in the Connection constructore. Returns a String indicating the seat's occupation value.
+*
+*@param refCount - the number provided indicating which seat to be references
+*/
     //Provides a means of catalouging connected users and organizing users[][] array
     //No need to synchronize, method only ever called within synchronized method makeConnection()
     public String userConnectionAvailability(int refCount) {
@@ -196,6 +221,10 @@ class Connection extends Thread {
 	return goAhead;
   }
 
+/**
+*Deletes a user's inputted values to their Connection object prior to connection termination when a termination is requested.
+*/
+
     //Removes client (port or name if written) from users list
     public synchronized void removeUserInfo() {
 	lock.lock();
@@ -207,6 +236,10 @@ class Connection extends Thread {
 	users[mySeatCount][1] = null;//Clear connection status
 	lock.unlock();
     }
+
+/**
+*Allow users to call a printing of the global array of all active Connection user name
+*/
 
     //Used to check what connections are made
     public void listUsers() {
@@ -229,6 +262,10 @@ class Connection extends Thread {
 	}
     }
 
+/**
+* Makes the requesting client requesting termination's seat free by replacing it's value to "true". Connection socket is closed with client.close();
+*/
+
     //Choose to terminate Connection and free space for other connections
     public synchronized void terminateConnection() {
 	lock.lock();
@@ -245,11 +282,19 @@ class Connection extends Thread {
 	lock.unlock();
     }
 
+/**
+*Used to turn the inputstream value of whatWasSaid into a String for easier facilitated printing and manipulation
+*/
+
     //Needed for analyzing non chat commands vs chat input (more defined type analysis on BufferedStream/DataStream etc.)
     public String whatWasSaidString(String whatWasSaid){
 	String whatWasSaidString = String.valueOf(whatWasSaid);
 	return whatWasSaidString;
     }
+
+/**
+*Sends to client a user request for knowing how many users are connected
+*/
 
     //Prints userCount to server and client display
     public void getUserCount(){ // should be printUserCount()
@@ -260,6 +305,10 @@ class Connection extends Thread {
 	out.println("Currently " + userCount + " active user(s)");
     }
 
+/**
+*Send to client a user request to know which seat they are occupying
+*/
+
     //Prints concerned client index of userCount to server and client display
     public void getMyCount(){
 	System.out.print("\033[H\033[2J");
@@ -269,6 +318,10 @@ class Connection extends Thread {
 	System.out.println("In seat: " + mySeatCount);
 	out.println("You are in seat " + mySeatCount);
     }
+
+/**
+*Allows a user to update thei users[x][0] value, which indicates their seat, and then the user name they would like in the second dimension.
+*/
 
     //Lets user opt for new display name
     public void changeUserName(){
@@ -291,6 +344,10 @@ class Connection extends Thread {
 	}
     }
 
+/**
+*Indicates when a help request is made by a client. Prints nothing to the client, only to the server screen, but indicates when the request is made.
+*/
+
     //Shows user possible commands when requested
     public void listCommands(){
 	System.out.print("\033[H\033[2J");
@@ -303,7 +360,12 @@ class Connection extends Thread {
 	System.out.println("'change user name': Update displayed user name");
 	System.out.println("'message': Contribute to ongoing chat...more instructions will follow.");
     }
-	
+
+/**
+*Used to send a message to all active clients simultaneously by referencing all active seat numbers in a loop counting the seats.
+*Indicates which user made the request, and thus allows other clients to see what was said a given user.
+*/
+
     //Used to trigger Broadcast when client requests to send group chat
     public void sendToAll(String whatWasSaid){
 	out.flush();
@@ -320,6 +382,12 @@ class Connection extends Thread {
 
 
 //RUN/START METHOD DELARATION
+
+/**
+*Activation of each consequtive thread made by a client request. Allows facilitation of all the previously declared methods by acting
+*primarily as a listener class, and processing the commands received through the inputstream by each active client. Allows for an
+*echo function as a default means of responding to requests.
+*/
 
     public void run(){
 
