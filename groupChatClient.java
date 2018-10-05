@@ -1,10 +1,8 @@
-//*
-*------------Assignment-1--Group-Chat-------------------------
-*------------Submitted-by--Brady-Ibanez--100367230------------
-*------------Submitted-on--October-4-2018---------------------
-*------------SOFE-4790U-Distributed-Systems-------------------
-*//
 
+//------------Assignment-1--Group-Chat-------------------------
+//------------Submitted-by--Brady-Ibanez--100367230------------
+//------------Submitted-on--October-4-2018---------------------
+//------------SOFE-4790U-Distributed-Systems-------------------
 
 import java.net.*;
 import java.io.*;
@@ -117,7 +115,7 @@ public class groupChatClient{
 	      String broadcast = new String (); //variable for all server provided instructions for a command
 
               System.out.print("\033[H\033[2J");
-	      System.out.println("Welcome to the LAN group messenger!");
+	      System.out.println("Welcome to the group messenger!");
 	      System.out.println(" ");
               System.out.println("If you'd like to see the list of app commands, type help at any time.");
 	      System.out.println(" ");
@@ -142,7 +140,7 @@ public class groupChatClient{
 		else if(userInput.equals("quit"))//Farwell message after disconnect
 		{
 			System.out.print("\033[H\033[2J");
-			System.out.println("Thanks for using the LAN group messenger!");
+			System.out.println("Thanks for using the group messenger!");
 			System.exit(0);
 		}
 
